@@ -42,48 +42,52 @@ def getComponents(page_id):
 	url = "https://api.statuspage.io/v1/pages/" + page_id + "/components.json"
 	return get(url)
 
-def postComponent(component):
+def postComponent(payload):
 	url = "https://api.statuspage.io/v1/pages/" + target_page + "/components.json"
-	payload={
-		'component[name]':component['name'],
-		'component[description]':component['description'],
-		'component[group_id]':replace_group_id(component['group_id'])
-		}
 	print "sending"
 	print payload
 	return post(url,payload)
 
-def createComponent(component):
+def createComponent(component,allComponents):
 	print "Creating component: " + component['name'] +":" + component['id']
-	response = postComponent(component)
-	print response
-	print response.text
-	new_component = response.json()
-	if 'id' in new_component:
-		group_id_mappings[component['id']] = new_component['id']
-		print group_id_mappings
-
-
-#this method will act recursively to ensure highest level parent exists before creating child.
-def createComponentTree(component_id, remainingComponents):
-	if component_id in remainingComponents:
-		component = remainingComponents[component_id]
-		if component['group_id']:
-			print "Component " + component['name'] + " has parent, build further up tree"
-			createComponentTree(component['group_id'],remainingComponents)
-		createComponent(component)
-		del remainingComponents[component_id]
+	payload={
+		'component[name]':component['name'],
+		'component[description]':component['description']
+		}
+	if component['group_id']:
+		if group_id_mappings[component['group_id']]:
+			print "\tAdding previously created parent ID " + group_id_mappings[component['group_id']]
+			payload['component[group_id]'] = group_id_mappings[component['group_id']]
+		else:
+			print "\tAdding new parent name: " + allComponents[component['group_id']]['name']
+			payload['component[group_name]'] = allComponents[component['group_id']]['name']
 	else:
-		print "Component " + component_id + " was previously created."
+		# becuase it has no parent, it could be a parent
+		if component['id'] in group_id_mappings:
+			print "\tSkipping parent: " + component['name']
+			return
+	response = postComponent(payload)
+	new_component = response.json()
+	if 'group_id' in new_component:
+		group_id_mappings[component['group_id']] = new_component['group_id']
+
+
 
 
 for page in source_pages:
 	print "Migrating page " + page
 	response = getComponents(page)
-	createdComponents = []
-	remainingComponents = dict_components_by_id(response.json())
-	
+	allComponentsById = dict_components_by_id(response.json())
+
+
+
 	for component in response.json():
-		createComponentTree(component['id'],remainingComponents)
+		if component['group_id']:
+			if component['group_id'] not in group_id_mappings:
+				print "marking component ID: " + component['group_id'] + " as a parent"
+				group_id_mappings[component['group_id']]=""
+
+	for component in response.json():
+		createComponent(component,allComponentsById)
 
 
