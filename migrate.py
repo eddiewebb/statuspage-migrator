@@ -3,9 +3,22 @@ import requests
 import time
 
 source_pages = ["gplkhyvn1nh2","vfdq0lwd1hk7","46qjhlfcz2w3","mxyt2m7f2kvz"]
-#source_pages = ["mxyt2m7f2kvz"]
 target_page = "hk277w25hzw7"
-api_key = "20a337bf86ccf339f4c4c25be8d4a47fd38aa2949c682e601260c1a1de23f237"
+api_key = "Your API Key Here"
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 parent_ids = []
 id_mappings = {}
 subscriber_by_key = {}
