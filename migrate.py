@@ -90,15 +90,18 @@ def createComponent(component,allComponents):
 def createSubscriber(subscriber_key):
 	subscriber = subscriber_by_key[subscriber_key]
 	#note this leave user inactive, and you'll need to manually or use /subscribers/reactivate to enable them
-	payload={'subscriber[skip_confirmation_notification]':'true'}
+	payload=[]
+	payload.append(('subscriber[skip_confirmation_notification]','true'))
 	if 'phone_number' in subscriber:
-		payload['subscriber[phone_number]'] = subscriber['phone_number']
-		payload['subscriber[phone_country]'] = subscriber['phone_country']
+		payload.append(('subscriber[phone_number]',subscriber['phone_number']))
+		payload.append(('subscriber[phone_country]',subscriber['phone_country']))
 	else:
-		payload['subscriber[email]'] = subscriber['email']
+		payload.append(('subscriber[email]',subscriber['email']))
 	for old_component_id in subscriber['components']:
-		payload['subscriber[component_ids][]'] = id_mappings[old_component_id]
+		payload.append(('subscriber[component_ids][]',id_mappings[old_component_id]))
+	print payload
 	response = postSubscriber(payload)
+	print response.request.body
 	print "\t" + str(response.status_code)
 	if response.status_code != 201:
 		print response.text
@@ -120,7 +123,14 @@ def addOrMergeSubscriber(subscriber,allPageComponentsById):
 	subscriber_by_key[key] = subscriber
 
 
-
+#test subscriber function
+#id_mappings["1"]="gv1xlvgs35n3"
+#id_mappings["2"]="lrqbdgkvzflw"
+#
+#subscriber = {'email':'edward.webb@libertymutual.com','components':["1","2"]}
+#subscriber_by_key["1"]=subscriber
+#createSubscriber("1")
+#exit()
 
 
 for page in source_pages:
