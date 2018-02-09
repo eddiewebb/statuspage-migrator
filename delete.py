@@ -1,15 +1,25 @@
 #! /usr/bin/env python
+
+#
+# In case you goofed migration, this **COMPLETELY PURGES*** all components on page
+#
+
+
+
 import requests
 
-target_page = "hk277w25hzw7"
-api_key = "20a337bf86ccf339f4c4c25be8d4a47fd38aa2949c682e601260c1a1de23f237"
+
+
+
+target_page = "pageID"
+api_key = "API KEY"
 
 
 
 from requests.auth import AuthBase
 
 class ApiKeyAuth(AuthBase):
-    """Attaches HTTP Pizza Authentication to the given Request object."""
+    """Attaches HTTP Authentication to the given Request object."""
     def __init__(self,api_key):
         # setup any auth-related data here
         self.api_key = api_key
@@ -35,7 +45,7 @@ def deleteComponent(component):
 
 
 response = getComponents()
-	
+
 for component in response.json():
 	print "Deleteing: " + component['name']
 	response = deleteComponent(component)

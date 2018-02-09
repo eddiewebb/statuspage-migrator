@@ -2,8 +2,8 @@
 import requests
 import time
 
-source_pages = ["gplkhyvn1nh2","vfdq0lwd1hk7","46qjhlfcz2w3","mxyt2m7f2kvz"]
-target_page = "hk277w25hzw7"
+source_pages = ["pageID1","pageID2","PageID3"]
+target_page = "targetPageID"
 api_key = "Your API Key Here"
 
 
@@ -26,7 +26,7 @@ subscriber_by_key = {}
 from requests.auth import AuthBase
 
 class ApiKeyAuth(AuthBase):
-    """Attaches HTTP Pizza Authentication to the given Request object."""
+    """Attaches HTTP Authentication to the given Request object."""
     def __init__(self,api_key):
         # setup any auth-related data here
         self.api_key = api_key
@@ -167,6 +167,3 @@ for page in source_pages:
 for subscriber_key in subscriber_by_key:
 	print "Adding subscriber: " + subscriber_by_key[subscriber_key]['id'];
 	createSubscriber(subscriber_key)
-
-
-
